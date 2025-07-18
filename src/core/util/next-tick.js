@@ -8,7 +8,7 @@ import { isIE, isIOS, isNative } from './env'
 export let isUsingMicroTask = false
 
 const callbacks = [] // 缓存一段时间内通过nextTick注册进来的所有待执行任务
-let pending = false // 标志是否已经开始执行队列中的任务
+let pending = false // 标志回调队列的下一轮执行是否已经注册
 
 function flushCallbacks () {
   // TODO：这里浅拷贝一次的意义是什么？
