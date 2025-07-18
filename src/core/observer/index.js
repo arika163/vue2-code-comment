@@ -197,7 +197,6 @@ export function defineReactive (
       // 1.如果当前属性是个普通属性，那么订阅者只收集到当前defineReactive闭包中的dep内
       // 2.如果当前属性是个响应式对象，那么订阅者还需要收集到响应式对象的ob的dep中
       // 3.如果当前属性是个数组，那么订阅者还需要收集到数组中所有响应对象元素的ob的dep中
-      //   此外，如果数组的元素仍是数组，这边的逻辑会进行递归
       if (Dep.target) {
       // 将订阅者塞到当前闭包里的dep中
         dep.depend() 
@@ -206,7 +205,10 @@ export function defineReactive (
           childOb.dep.depend()
           if (Array.isArray(value)) {
             // 递归使数组中的每个响应式对象都被全局唯一的订阅者订阅
-            // TODO 这边这么设计的意义是什么？
+            // 这是一些特殊场景的暴力保底手段（因为数组索引是不做响应式化的）
+            // 比如：我们在数组的一个对象元素上，通过$set添加一个属性
+            // 这种场景下，如果不走这个依赖收集流程，订阅者就没办法收到通知
+            // github上有尤大的说明：https://github.com/vuejs/vue/issues/6284#issuecomment-326686494
             dependArray(value) 
           }
         }

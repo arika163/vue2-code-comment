@@ -24,6 +24,7 @@ function _traverse (val: any, seen: SimpleSet) {
   }
   if (val.__ob__) {
     const depId = val.__ob__.dep.id
+    // 防止循环引用，访问过的结点直接返回
     if (seen.has(depId)) {
       return
     }
@@ -35,6 +36,6 @@ function _traverse (val: any, seen: SimpleSet) {
   } else {
     keys = Object.keys(val)
     i = keys.length
-    while (i--) _traverse(val[keys[i]], seen)
+    while (i--) _traverse(val[keys[i]], seen) // 取值的时候触发getter，完成依赖收集
   }
 }
